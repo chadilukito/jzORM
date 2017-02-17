@@ -7,7 +7,7 @@ Object Relational Mapping (ORM) built on top of FPC SqlDB package.
 * Requires Free Pascal (http://www.freepascal.org/)
 
 ## Last tested on
-* FPC 3.1.1 rev. 35299
+* FPC 3.1.1 rev. 35402
 
 ## Notes
 * These codes are always tested and develop based on latest FPC version in trunk or otherwise indicated
