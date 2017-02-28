@@ -58,9 +58,13 @@ type
       property Address: String read getAddress write setAddress;
       property Age: Integer read getAge write setAge;
       property Info: String read getInfo write setInfo;
+
+      procedure output();
   end;
 
 implementation
+
+uses sysutils;
 
 procedure cCustomerModel.initField();
   begin
@@ -79,32 +83,32 @@ procedure cCustomerModel.initField();
 
 procedure cCustomerModel.setId(setvar: Integer);
   begin
-    fieldUpdated(Field_Id);
     fId := setvar;
+    fieldUpdated(Field_Id);
   end;
 
 procedure cCustomerModel.setName(setvar: String);
   begin
-    fieldUpdated(Field_Name);
     fName := setvar;
+    fieldUpdated(Field_Name);
   end;
 
 procedure cCustomerModel.setAddress(setvar: String);
   begin
-    fieldUpdated(Field_Address);
     fAddress := setvar;
+    fieldUpdated(Field_Address);
   end;
 
 procedure cCustomerModel.setAge(setvar: Integer);
   begin
-    fieldUpdated(Field_Age);
     fAge := setvar;
+    fieldUpdated(Field_Age);
   end;
 
 procedure cCustomerModel.setInfo(setvar: String);
   begin
-    fieldUpdated(Field_Info);
     fInfo := setvar;
+    fieldUpdated(Field_Info);
   end;
 
 function cCustomerModel.getId(): Integer;
@@ -130,6 +134,19 @@ function cCustomerModel.getAge(): Integer;
 function cCustomerModel.getInfo(): String;
   begin
     result := fInfo;
+  end;
+
+procedure cCustomerModel.output();
+  begin
+    writeln;
+    writeln('Customer Model');
+    writeln('==============');
+    writeln('ID: '+IntToStr(ID));
+    writeln('Name: '+Name);
+    writeln('Address: '+Address);
+    writeln('Age: '+IntToStr(Age));
+    writeln('Info: '+Info);
+    writeln;
   end;
 
 end.

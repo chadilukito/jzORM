@@ -8,15 +8,15 @@ uses TestFramework, jzorm.mysqlconnector;
 
 type  
   cConnectorTest = class(TTestCase)
-  private
-    function createConnection(): cORMMySqlConnector;
-  
-  published
-    procedure Test_Connection;
-    //procedure TestDBPool_UseInit;
-    //procedure TestDBPool_MaxLimit;
-    //procedure TestDBPool_Release_n_Reuse;
-    //procedure TestDBPool_GetWithSmallTimeout;
+    private
+      function createConnection(): cORMMySqlConnector;
+
+    published
+      procedure Test_Connection;
+      //procedure TestDBPool_UseInit;
+      //procedure TestDBPool_MaxLimit;
+      //procedure TestDBPool_Release_n_Reuse;
+      //procedure TestDBPool_GetWithSmallTimeout;
   end;
 
 
@@ -32,8 +32,14 @@ begin
 end;
 
 procedure cConnectorTest.Test_Connection;
+  var
+     conn: cORMMySqlConnector;
+
   begin
-    CheckEquals(true, createConnection().Connected, 'Failed - Connected Connector');
+    conn := createConnection();
+    CheckEquals(true, conn.Connected, 'Failed - Connected Connector');
+
+    FreeAndNil(conn);
   end;
 
 function cConnectorTest.createConnection(): cORMMySqlConnector;
