@@ -23,6 +23,8 @@ type
       procedure Test_FindBy_1;
       procedure Test_FindOneBy_1;
       procedure Test_FindOneBy_2;
+      procedure Test_Count_1;
+      procedure Test_Count_2;
 
       procedure Test_RawSQLReader;
       procedure Test_RawSQLWriter;
@@ -273,6 +275,32 @@ procedure cRepositoryTest.Test_Delete_1;
     mcust := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldOperator.sfoEqual, 15)), cOrderByField.Create('Age'));
 
     CheckEquals(true, repo.delete(mcust), 'Failed - Delete');
+    FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_Count_1;
+  var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+
+    CheckEquals(100, repo.countAll(), 'Failed - Count 1');
+    FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_Count_2;
+  var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+
+    CheckEquals(25, repo.countFor(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldOperator.sfoLessThan, 35))), 'Failed - Count 2');
     FreeAndNil(conn);
   end;
 

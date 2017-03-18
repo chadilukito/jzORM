@@ -100,13 +100,13 @@ procedure cDetailsModel.setName(setvar: String);
   begin
     fName := setvar;
     fieldUpdated(Field_Name);
-    setTotal(fPrice * fCount);
   end;
 
 procedure cDetailsModel.setPrice(setvar: Currency);
   begin
     fPrice := setvar;
     fieldUpdated(Field_Price);
+    setTotal(fPrice * fCount);
   end;
 
 procedure cDetailsModel.setCount(setvar: Integer);
