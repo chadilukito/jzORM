@@ -17,6 +17,7 @@ type
       procedure Test_Empty;
       procedure Test_Insert_1;
       procedure Test_Insert_2;
+      procedure Test_Insert_3;
       procedure Test_Update;
       procedure Test_Delete_1;
       procedure Test_FindAll;
@@ -242,6 +243,29 @@ procedure cRepositoryTest.Test_Insert_2;
     conn := createConnection();
     repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
     CheckEquals(true, repo.insert(arrmcust), 'Failed - Insert 2');
+
+    FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_Insert_3;
+  var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+    mcust: cCustomerModel;
+
+  begin
+    mcust := cCustomerModel.Create();
+    mcust.id := 58; //should be duplicate with existing one from Insert_2
+    mcust.name := 'c1';
+    mcust.address := 'address c1';
+    mcust.age := 11;
+    mcust.info := 'customer 1';
+
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+    CheckEquals(true, repo.insert(mcust, insIgnoreOnDuplicate), 'Failed - Insert 3');
+    CheckEquals(58, mcust.id, 'Failed - Insert - Auto Increment 2');
+    writeln('Customer ID: '+IntToStr(mcust.id));
 
     FreeAndNil(conn);
   end;
