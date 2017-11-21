@@ -6,7 +6,7 @@ interface
 
 uses TestFramework, jzorm.mysqlconnector;
 
-type  
+type
   cRepositoryTest = class(TTestCase)
     private
       function createConnection(): cORMMySqlConnector;
@@ -20,10 +20,12 @@ type
       procedure Test_Insert_3;
       procedure Test_Update;
       procedure Test_Delete_1;
+      procedure Test_Delete_3;
       procedure Test_FindAll;
       procedure Test_FindBy_1;
       procedure Test_FindOneBy_1;
       procedure Test_FindOneBy_2;
+      procedure Test_Find_Empty;
       procedure Test_Count_1;
       procedure Test_Count_2;
 
@@ -39,7 +41,7 @@ implementation
 uses classes, sysutils, typinfo,
      jzorm.baserepository, jzorm.basemodel, jzorm.modelcollection, jzorm.rawrepository,
      customermodel;
-  
+
 procedure RegisterTests;
 begin
   TestFramework.RegisterTest('jzORM Test Suite', cRepositoryTest.Suite);
@@ -197,6 +199,37 @@ procedure cRepositoryTest.Test_FindOneBy_2;
     FreeAndNil(conn);
   end;
 
+procedure cRepositoryTest.Test_Find_Empty;
+   var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+    collmcust: specialize cORMModelCollection<cCustomerModel>;
+    mcust: cCustomerModel;
+    criteria: specialize TArray<cSearchCriteria>;
+    search: cSearchField;
+    cnt: Word;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+
+    search := cSearchField.Create('Age', TSearchFieldOperator.sfoIn, -1);
+    search.addValue(-2);
+
+    SetLength(criteria, 2);
+    criteria[0] := cSearchCriteria.Create(1, cSearchField.Create('Address', TSearchFieldOperator.sfoLike, '%c-10'), scoOr);
+    criteria[1] := cSearchCriteria.Create(1, search);
+
+    collmcust := repo.findBy(criteria, cOrderByField.Create('id'));
+
+    cnt := 0;
+    for mcust in collmcust do inc(cnt);
+    CheckEquals(0, cnt, 'Failed - Find Empty');
+
+    FreeAndNil(collmcust);
+    FreeAndNil(conn);
+  end;
+
 procedure cRepositoryTest.Test_Insert_1;
   var
     repo: specialize cORMRepository<cCustomerModel>;
@@ -298,7 +331,28 @@ procedure cRepositoryTest.Test_Delete_1;
     repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
     mcust := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldOperator.sfoEqual, 15)), cOrderByField.Create('Age'));
 
-    CheckEquals(true, repo.delete(mcust), 'Failed - Delete');
+    CheckEquals(true, repo.delete(mcust), 'Failed - Delete 1');
+    FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_Delete_3;
+  var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+    mcust: cCustomerModel;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+
+    mcust := cCustomerModel.Create();
+    mcust.name := 'c1 delete';
+    mcust.address := 'address c1 delete';
+    mcust.age := 11;
+    mcust.info := 'customer 1 delete';
+
+    CheckEquals(true, repo.insert(mcust), 'Failed - Delete 3 - Insert');
+    CheckEquals(true, repo.delete(mcust), 'Failed - Delete 3 - Delete');
     FreeAndNil(conn);
   end;
 
