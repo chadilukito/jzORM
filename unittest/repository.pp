@@ -28,6 +28,7 @@ type
       procedure Test_Find_Empty;
       procedure Test_Count_1;
       procedure Test_Count_2;
+      procedure Test_BOF_EOF;
 
       procedure Test_RawSQLReader;
       procedure Test_RawSQLWriter;
@@ -379,6 +380,34 @@ procedure cRepositoryTest.Test_Count_2;
     repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
 
     CheckEquals(25, repo.countFor(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldOperator.sfoLessThan, 35))), 'Failed - Count 2');
+    FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_BOF_EOF;
+  var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+    arrmcust: specialize cORMModelCollection<cCustomerModel>;
+    criteria: specialize TArray<cSearchCriteria>;
+    search: cSearchField;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+
+    search := cSearchField.Create('Age', TSearchFieldOperator.sfoIn, 23);
+    SetLength(criteria, 1);
+    criteria[0] := cSearchCriteria.Create(1, search);
+
+    arrmcust := repo.findBy(criteria, cOrderByField.Create('id'));
+
+    CheckEquals(true, arrmcust.isBOF, 'Failed - BOF 1');
+    CheckEquals(false, arrmcust.isEOF, 'Failed - EOF 1');
+    arrmcust.next;
+    CheckEquals(false, arrmcust.isBOF, 'Failed - BOF 2');
+    CheckEquals(true, arrmcust.isEOF, 'Failed - EOF 2');
+
+    FreeAndNil(arrmcust);
     FreeAndNil(conn);
   end;
 
