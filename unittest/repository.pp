@@ -29,6 +29,7 @@ type
       procedure Test_Count_1;
       procedure Test_Count_2;
       procedure Test_BOF_EOF;
+      procedure Test_Nil_Collection;
 
       procedure Test_RawSQLReader;
       procedure Test_RawSQLWriter;
@@ -409,6 +410,21 @@ procedure cRepositoryTest.Test_BOF_EOF;
 
     FreeAndNil(arrmcust);
     FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_Nil_Collection;
+  var
+     arrmcust: specialize cORMModelCollection<cCustomerModel>;
+     mcust: cCustomerModel;
+     cnt: Byte;
+
+  begin
+    arrmcust := (specialize cORMModelCollection<cCustomerModel>).Create(nil);
+    cnt := 0;
+    for mcust in arrmcust do inc(cnt);
+
+    CheckEquals(true, arrmcust.isEmpty, 'Failed - Nil Collection 1');
+    CheckEquals(0, cnt, 'Failed - Nil Collection 2');
   end;
 
 procedure cRepositoryTest.Test_RawSQLReader;
