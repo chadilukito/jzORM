@@ -24,25 +24,30 @@ type
   cDataModel = class(cORMBaseModel)
     private
       const
-        Field_Id   = 'id';
-        Field_Json = 'json';
+        Field_Id       = 'id';
+        Field_Json     = 'json';
+        Field_LargeInt = 'largeint';
 
       var
         fId: Integer;
         fJson: TJSONObject;
+        fLargeInt: Int64;
 
     protected
       procedure setId(setvar: Integer);
       procedure setJson(setvar: TJSONObject);
+      procedure setLargeInt(setvar: Int64);
 
       function getId(): Integer;
       function getJson(): TJSONObject;
+      function getLargeInt(): Int64;
 
       procedure initField(); override;
 
     public
       property ID: Integer read getId write setId;
       property DataJson: TJSONObject read getJson write setJson;
+      property LargeInteger: Int64 read getLargeInt write setLargeInt;
   end;
 
 implementation
@@ -51,9 +56,11 @@ procedure cDataModel.initField();
   begin
     addField(Field_Id, mdtInteger, true);
     addField(Field_Json, mdtJson);
+    addField(Field_LargeInt, mdtLargeInt);
 
     setFieldCallback(Field_Id, @setId, @getId);
     setFieldCallback(Field_Json, @setJson, @getJson);
+    setFieldCallback(Field_LargeInt, @setLargeInt, @getLargeInt);
   end;
 
 procedure cDataModel.setId(setvar: Integer);
@@ -68,6 +75,12 @@ procedure cDataModel.setJson(setvar: TJSONObject);
     fieldUpdated(Field_Json);
   end;
 
+procedure cDataModel.setLargeInt(setvar: Int64);
+  begin
+    fLargeInt := setvar;
+    fieldUpdated(Field_LargeInt);
+  end;
+
 function cDataModel.getId(): Integer;
   begin
     result := fId;
@@ -76,6 +89,11 @@ function cDataModel.getId(): Integer;
 function cDataModel.getJson(): TJSONObject;
   begin
     result := fJson;
+  end;
+
+function cDataModel.getLargeInt(): Int64;
+  begin
+    result := fLargeInt;
   end;
 
 end.
