@@ -31,6 +31,7 @@ type
       procedure Test_BOF_EOF;
       procedure Test_Nil_Collection;
       procedure Test_Aggregate_1;
+      procedure Test_Aggregate_2;
 
       procedure Test_RawSQLReader;
       procedure Test_RawSQLWriter;
@@ -440,14 +441,39 @@ procedure cRepositoryTest.Test_Aggregate_1;
     conn := createConnection();
     repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
 
-    arrmcust := repo.findBy(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateOperator.sfaoCount, TSearchFieldOperator.sfoGreaterThan, 1)));
+    arrmcust := repo.findBy(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateFunction.sfafCount, TSearchFieldOperator.sfoGreaterThan, 1)));
     cnt := 0;
     for mcust in arrmcust do inc(cnt);
 
-    mcust := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateOperator.sfaoCount, TSearchFieldOperator.sfoGreaterThan, 1)));
+    mcust := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateFunction.sfafCount, TSearchFieldOperator.sfoGreaterThan, 1)));
 
     CheckEquals(1, cnt, 'Failed - Aggregate 1 - length');
     CheckEquals(11, mcust.Age, 'Failed - Aggregate 1 - data');
+
+    FreeAndNil(conn);
+  end;
+
+procedure cRepositoryTest.Test_Aggregate_2;
+  var
+    repo: specialize cORMRepository<cCustomerModel>;
+    conn: cORMMySqlConnector;
+    arrmcust: specialize cORMModelCollection<cCustomerModel>;
+    mcust: cCustomerModel;
+    cnt: Byte;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+
+    arrmcust := repo.findAll(cOrderByField.Create(cOrderByAggregateField.Create('Age', TSearchFieldAggregateFunction.sfafCount), foaDESC));
+    cnt := 0;
+    for mcust in arrmcust do inc(cnt);
+    
+    arrmcust := repo.findAll(cOrderByField.Create(cOrderByAggregateField.Create('Age', TSearchFieldAggregateFunction.sfafCount), foaDESC));
+    mcust := arrmcust.First;
+    
+    CheckEquals(99, cnt, 'Failed - Aggregate 2 - length');
+    CheckEquals(11, mcust.Age, 'Failed - Aggregate 2 - data');
 
     FreeAndNil(conn);
   end;

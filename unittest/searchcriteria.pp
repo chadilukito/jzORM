@@ -241,7 +241,7 @@ procedure cSearchCriteriaTest.Test_MixAggregate_1;
 
     SetLength(criteria, 2);
     criteria[0] := cSearchCriteria.Create(1, cSearchField.Create('Column2', TSearchFieldOperator.sfoEqual, ':old'));
-    criteria[1] := cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateOperator.sfaoCount, TSearchFieldOperator.sfoGreaterThan, 1));
+    criteria[1] := cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateFunction.sfafCount, TSearchFieldOperator.sfoGreaterThan, 1));
 
     CheckEquals(CExpected, repo.processWhereSearchCriteria(criteria), 'Failed - SC Mix Aggregate 1');
   end;
@@ -260,7 +260,7 @@ procedure cSearchCriteriaTest.Test_MixAggregate_2;
     repo := specialize cORMRepositoryInherit<cCustomerModel>.Create(conn, 'customer');
 
     SetLength(criteria, 1);
-    criteria[0] := cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateOperator.sfaoCount, TSearchFieldOperator.sfoGreaterThan, 1));
+    criteria[0] := cSearchCriteria.Create(1, cSearchField.Create('Age', TSearchFieldAggregateFunction.sfafCount, TSearchFieldOperator.sfoGreaterThan, 1));
 
     CheckEquals(CExpected, repo.processWhereSearchCriteria(criteria), 'Failed - SC Mix Aggregate 2');
   end;
