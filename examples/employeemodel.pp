@@ -1,5 +1,5 @@
 {
-    Copyright (C) 2017  -  Christian Hadi L
+    Copyright (C) 2017-2020  -  Christian Hadi L
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ implementation
 
 procedure cEmployeeModel.initField();
   begin
-    addField(Field_Id, mdtInteger, true);
+    addField(Field_Id, mdtInteger, true, true);
     addField(Field_Name, mdtString);
     addField(Field_Salary, mdtCurrency);
     addField(Field_Dept, mdtString);

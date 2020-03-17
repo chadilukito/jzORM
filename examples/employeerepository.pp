@@ -1,5 +1,5 @@
 {
-    Copyright (C) 2017  -  Christian Hadi L
+    Copyright (C) 2017-2020  -  Christian Hadi L
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ uses jzorm.baserepository, employeemodel, jzorm.modelcollection;
 
 type
   generic cEmployeeRepository<T: cEmployeeModel> = class(specialize cORMRepository<T>)
+    private
+      type
+        TCollModel = specialize cORMModelCollection<T>;
+      
     public
       function getManager(model: T): cEmployeeModel;
       function getSubOrdinate(model: T): specialize cORMModelCollection<T>;
@@ -36,12 +40,22 @@ function cEmployeeRepository.getManager(model: T): cEmployeeModel;
   end;
 
 function cEmployeeRepository.getSubOrdinate(model: T): specialize cORMModelCollection<T>;
+  var
+     idx: Integer;
+  
   begin
-    if (model.Fields[model.searchFieldByName('managerid')].valueSet) then
+    if (Not Assigned(model)) then
+      begin
+        result := TCollModel.Create(nil);
+        exit;
+      end;
+  
+    idx := model.searchFieldByName('managerid');
+    if (model.Fields[idx].valueSet) then
       begin
         result := findBy(cSearchCriteria.Create(1, cSearchField.Create('managerid', TSearchFieldOperator.sfoEqual, model.Id)));
       end else
-      result := nil;
+      result := TCollModel.Create(nil);
   end;
 
 function cEmployeeRepository.removeManager(model: T): Boolean;

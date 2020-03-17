@@ -1,5 +1,5 @@
 {
-    Copyright (C) 2017  -  Christian Hadi L
+    Copyright (C) 2017-2020  -  Christian Hadi L
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -23,19 +23,13 @@ uses jzorm.basemodel, jzorm.datatypes;
 type
   cCustomerModel = class(cORMBaseModel)
     private
-      const
-        Field_Id      = 'id';
-        Field_Name    = 'name';
-        Field_Address = 'address';
-        Field_Age     = 'age';
-        Field_Info    = 'info';
-
-      var
-        fId: Integer;
-        fName: String;
-        fAddress: String;
-        fAge: Integer;
-        fInfo: String;
+      fId: Integer;
+      fName: String;
+      fAddress: String;
+      fAge: Integer;
+      fInfo: String;
+      fFund: Double;
+      fFundD: Double;
 
     protected
       procedure setId(setvar: Integer);
@@ -43,21 +37,36 @@ type
       procedure setAddress(setvar: String);
       procedure setAge(setvar: Integer);
       procedure setInfo(setvar: String);
+      procedure setFund(setvar: Double);
+      procedure setFundD(setvar: Double);
 
       function getId(): Integer;
       function getName(): String;
       function getAddress(): String;
       function getAge(): Integer;
       function getInfo(): String;
+      function getFund(): Double;
+      function getFundD(): Double;
 
       procedure initField(); override;
 
     public
+      const
+        Field_Id      = 'id';
+        Field_Name    = 'name';
+        Field_Address = 'address';
+        Field_Age     = 'age';
+        Field_Info    = 'info';
+        Field_Fund    = 'fund';
+        Field_FundD   = 'fundd';
+    
       property ID: Integer read getId write setId;
       property Name: String read getName write setName;
       property Address: String read getAddress write setAddress;
       property Age: Integer read getAge write setAge;
       property Info: String read getInfo write setInfo;
+      property Fund: Double read getFund write setFund;
+      property FundD: Double read getFundD write setFundD;
 
       procedure output();
   end;
@@ -68,17 +77,21 @@ uses sysutils;
 
 procedure cCustomerModel.initField();
   begin
-    addField(Field_Id, mdtInteger, true);
+    addField(Field_Id, mdtInteger, true, true);
     addField(Field_Name, mdtString);
     addField(Field_Address, mdtString);
     addField(Field_Age, mdtInteger);
     addField(Field_Info, mdtString);
+    addField(Field_Fund, mdtFloat);
+    addField(Field_FundD, mdtFloat, false, false, 10, 5); // Decimal
 
     setFieldCallback(Field_Id, @setId, @getId);
     setFieldCallback(Field_Name, @setName, @getName);
     setFieldCallback(Field_Address, @setAddress, @getAddress);
     setFieldCallback(Field_Age, @setAge, @getAge);
     setFieldCallback(Field_Info, @setInfo, @getInfo);
+    setFieldCallback(Field_Fund, @setFund, @getFund);
+    setFieldCallback(Field_FundD, @setFundD, @getFundD);
   end;
 
 procedure cCustomerModel.setId(setvar: Integer);
@@ -110,6 +123,18 @@ procedure cCustomerModel.setInfo(setvar: String);
     fInfo := setvar;
     fieldUpdated(Field_Info);
   end;
+  
+procedure cCustomerModel.setFund(setvar: Double);
+  begin
+    fFund := setvar;
+    fieldUpdated(Field_Fund);
+  end;
+  
+procedure cCustomerModel.setFundD(setvar: Double);
+  begin
+    fFundD := setvar;
+    fieldUpdated(Field_FundD);
+  end;
 
 function cCustomerModel.getId(): Integer;
   begin
@@ -135,17 +160,29 @@ function cCustomerModel.getInfo(): String;
   begin
     result := fInfo;
   end;
+  
+function cCustomerModel.getFund(): Double;
+  begin
+    result := fFund;
+  end;
+  
+function cCustomerModel.getFundD(): Double;
+  begin
+    result := fFundD;
+  end;
 
 procedure cCustomerModel.output();
   begin
     writeln;
     writeln('Customer Model');
     writeln('==============');
-    writeln('ID: '+IntToStr(ID));
-    writeln('Name: '+Name);
+    writeln('ID     : '+IntToStr(ID));
+    writeln('Name   : '+Name);
     writeln('Address: '+Address);
-    writeln('Age: '+IntToStr(Age));
-    writeln('Info: '+Info);
+    writeln('Age    : '+IntToStr(Age));
+    writeln('Info   : '+Info);
+    writeln('Fund   : '+FloatToStr(Fund));
+    writeln('FundD  : '+FloatToStr(FundD));
     writeln;
   end;
 

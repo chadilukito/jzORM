@@ -18,9 +18,11 @@ type
       procedure Test_Insert_1;
       procedure Test_Insert_2;
       procedure Test_Insert_3;
-      procedure Test_Update;
+      procedure Test_Update_1;
+      procedure Test_Update_2;
       procedure Test_Delete_1;
       procedure Test_Delete_3;
+      procedure Test_Delete_4;
       procedure Test_FindAll;
       procedure Test_FindBy_1;
       procedure Test_FindOneBy_1;
@@ -32,6 +34,8 @@ type
       procedure Test_Nil_Collection;
       procedure Test_Aggregate_1;
       procedure Test_Aggregate_2;
+      
+      procedure Test_DataType_Decimal;
 
       procedure Test_RawSQLReader;
       procedure Test_RawSQLWriter;
@@ -57,8 +61,8 @@ end;
 
 procedure cRepositoryTest.Test_Delete_2;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
 
   begin
     conn := createConnection();
@@ -86,12 +90,12 @@ procedure cRepositoryTest.Test_Empty;
 
 procedure cRepositoryTest.Test_FindAll;
   var
-    cust: cCustomerModel;
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    ColumnLimit: TStringList;
-    I, idx: Integer;
-    fAll: specialize cORMModelCollection<cCustomerModel>;
+     cust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     ColumnLimit: TStringList;
+     I, idx: Integer;
+     fAll: specialize cORMModelCollection<cCustomerModel>;
 
   begin
     conn := createConnection();
@@ -116,13 +120,13 @@ procedure cRepositoryTest.Test_FindAll;
 
 procedure cRepositoryTest.Test_FindBy_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    arrmcust: specialize cORMModelCollection<cCustomerModel>;
-    mcust: cCustomerModel;
-    criteria: specialize TArray<cSearchCriteria>;
-    search: cSearchField;
-    cnt: Word;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     arrmcust: specialize cORMModelCollection<cCustomerModel>;
+     mcust: cCustomerModel;
+     criteria: specialize TArray<cSearchCriteria>;
+     search: cSearchField;
+     cnt: Word;
 
   begin
     conn := createConnection();
@@ -169,9 +173,9 @@ procedure cRepositoryTest.Test_FindBy_1;
 
 procedure cRepositoryTest.Test_FindOneBy_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
 
   begin
     conn := createConnection();
@@ -184,10 +188,10 @@ procedure cRepositoryTest.Test_FindOneBy_1;
 
 procedure cRepositoryTest.Test_FindOneBy_2;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
-    criteria: specialize TArray<cSearchCriteria>;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
+     criteria: specialize TArray<cSearchCriteria>;
 
   begin
     conn := createConnection();
@@ -205,13 +209,13 @@ procedure cRepositoryTest.Test_FindOneBy_2;
 
 procedure cRepositoryTest.Test_Find_Empty;
    var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    collmcust: specialize cORMModelCollection<cCustomerModel>;
-    mcust: cCustomerModel;
-    criteria: specialize TArray<cSearchCriteria>;
-    search: cSearchField;
-    cnt: Word;
+      repo: specialize cORMRepository<cCustomerModel>;
+      conn: cORMMySqlConnector;
+      collmcust: specialize cORMModelCollection<cCustomerModel>;
+      mcust: cCustomerModel;
+      criteria: specialize TArray<cSearchCriteria>;
+      search: cSearchField;
+      cnt: Word;
 
   begin
     conn := createConnection();
@@ -236,9 +240,9 @@ procedure cRepositoryTest.Test_Find_Empty;
 
 procedure cRepositoryTest.Test_Insert_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
 
   begin
     mcust := cCustomerModel.Create();
@@ -246,11 +250,13 @@ procedure cRepositoryTest.Test_Insert_1;
     mcust.address := 'address c1';
     mcust.age := 11;
     mcust.info := 'customer 1';
+    mcust.fund := 88.88;
+    mcust.fundD := 88.88;
 
     conn := createConnection();
     repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
     CheckEquals(true, repo.insert(mcust), 'Failed - Insert 1');
-    CheckNotEquals(-1, mcust.id, 'Failed - Insert - Auto Increment');
+    CheckNotEquals(-1, mcust.id, 'Failed - Insert 1 - Auto Increment');
     writeln('Customer ID: '+IntToStr(mcust.id));
 
     FreeAndNil(conn);
@@ -258,11 +264,11 @@ procedure cRepositoryTest.Test_Insert_1;
 
 procedure cRepositoryTest.Test_Insert_2;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
-    arrmcust: specialize TArray<cCustomerModel>;
-    I: Integer;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
+     arrmcust: specialize TArray<cCustomerModel>;
+     I: Integer;
 
   begin
     SetLength(arrmcust, 100);
@@ -273,6 +279,8 @@ procedure cRepositoryTest.Test_Insert_2;
         mcust.address := 'address c'+IntToStr(I+1);
         mcust.age := 10+I;
         mcust.info := 'customer '+IntToStr(I+1);
+        mcust.fund := (1 + Random(1000)) + Random;
+        mcust.fundD := mcust.fund;
 
         arrmcust[I] := mcust;
       end;
@@ -286,9 +294,9 @@ procedure cRepositoryTest.Test_Insert_2;
 
 procedure cRepositoryTest.Test_Insert_3;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust, mcust2: cCustomerModel;
 
   begin
     mcust := cCustomerModel.Create();
@@ -297,21 +305,26 @@ procedure cRepositoryTest.Test_Insert_3;
     mcust.address := 'address c1';
     mcust.age := 11;
     mcust.info := 'customer 1';
+    mcust.fund := 88.12;
+    mcust.fundD := 88.12;
 
     conn := createConnection();
     repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
     CheckEquals(true, repo.insert(mcust, insIgnoreOnDuplicate), 'Failed - Insert 3');
-    CheckEquals(58, mcust.id, 'Failed - Insert - Auto Increment 2');
-    writeln('Customer ID: '+IntToStr(mcust.id));
+    CheckEquals(58, mcust.id, 'Failed - Insert 3 - Auto Increment');
+    
+    mcust2 := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create(mcust.Field_Id, TSearchFieldOperator.sfoEqual, mcust.id)));
+    CheckNotEquals('customer 1', mcust2.info, 'Failed - Insert 3 - Wrong Info');
+    //writeln('Customer ID: '+IntToStr(mcust.id));
 
     FreeAndNil(conn);
   end;
 
-procedure cRepositoryTest.Test_Update;
+procedure cRepositoryTest.Test_Update_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
 
   begin
     conn := createConnection();
@@ -320,15 +333,44 @@ procedure cRepositoryTest.Test_Update;
     mcust.Info := mcust.Info + ' - updated';
     //mcust.output();
 
-    CheckEquals(true, repo.update(mcust), 'Failed - Update');
+    CheckEquals(true, repo.update(mcust), 'Failed - Update 1');
+    FreeAndNil(conn);
+  end;
+  
+procedure cRepositoryTest.Test_Update_2;
+  var
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust1, mcust2, mcust3: cCustomerModel;
+     adder, mId: Byte;
+
+  begin
+    adder := 11;
+    mcust2 := cCustomerModel.Create();
+    //mcust2.id := 95; //should be duplicate with existing one from Insert_2
+    mId := 95;
+    mcust2.age := adder;
+    
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+    mcust1 := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create(mcust2.Field_Id, TSearchFieldOperator.sfoEqual, mId)));
+
+    // doing: update customer set age = age + 11 where id = 95
+    CheckEquals(true, repo.updateAll(mcust2, [mcust2.Field_Age], [updASelfRef],
+                                     [cSearchCriteria.Create(1, cSearchField.Create(mcust2.Field_Id, TSearchFieldOperator.sfoEqual, mId))]),
+                'Failed - Update 2 - 1');
+    
+    mcust3 := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create(mcust2.Field_Id, TSearchFieldOperator.sfoEqual, mId)));
+    CheckEquals(mcust3.age, mcust1.age + adder, 'Failed - Update 2 - 2');
+    
     FreeAndNil(conn);
   end;
 
 procedure cRepositoryTest.Test_Delete_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
 
   begin
     conn := createConnection();
@@ -341,9 +383,9 @@ procedure cRepositoryTest.Test_Delete_1;
 
 procedure cRepositoryTest.Test_Delete_3;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    mcust: cCustomerModel;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust: cCustomerModel;
 
   begin
     conn := createConnection();
@@ -359,11 +401,34 @@ procedure cRepositoryTest.Test_Delete_3;
     CheckEquals(true, repo.delete(mcust), 'Failed - Delete 3 - Delete');
     FreeAndNil(conn);
   end;
+  
+procedure cRepositoryTest.Test_Delete_4;
+  var
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust, mcust1: cCustomerModel;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+    
+    mcust := cCustomerModel.Create();
+    mcust.name := 'x1 delete';
+    mcust.address := 'address x1 delete';
+    mcust.age := 11;
+    //mcust.info := 'customer 1 delete'; // null info
+
+    CheckEquals(true, repo.insert(mcust), 'Failed - Delete 4 - Insert');
+    
+    mcust1 := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('id', TSearchFieldOperator.sfoEqual, mcust.Id)));
+    CheckEquals(true, repo.delete(mcust1), 'Failed - Delete 4 - Delete');
+    FreeAndNil(conn);
+  end;
 
 procedure cRepositoryTest.Test_Count_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
 
   begin
     conn := createConnection();
@@ -375,8 +440,8 @@ procedure cRepositoryTest.Test_Count_1;
 
 procedure cRepositoryTest.Test_Count_2;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
 
   begin
     conn := createConnection();
@@ -388,11 +453,11 @@ procedure cRepositoryTest.Test_Count_2;
 
 procedure cRepositoryTest.Test_BOF_EOF;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    arrmcust: specialize cORMModelCollection<cCustomerModel>;
-    criteria: specialize TArray<cSearchCriteria>;
-    search: cSearchField;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     arrmcust: specialize cORMModelCollection<cCustomerModel>;
+     criteria: specialize TArray<cSearchCriteria>;
+     search: cSearchField;
 
   begin
     conn := createConnection();
@@ -431,11 +496,11 @@ procedure cRepositoryTest.Test_Nil_Collection;
 
 procedure cRepositoryTest.Test_Aggregate_1;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    arrmcust: specialize cORMModelCollection<cCustomerModel>;
-    mcust: cCustomerModel;
-    cnt: Byte;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     arrmcust: specialize cORMModelCollection<cCustomerModel>;
+     mcust: cCustomerModel;
+     cnt: Byte;
 
   begin
     conn := createConnection();
@@ -455,11 +520,11 @@ procedure cRepositoryTest.Test_Aggregate_1;
 
 procedure cRepositoryTest.Test_Aggregate_2;
   var
-    repo: specialize cORMRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    arrmcust: specialize cORMModelCollection<cCustomerModel>;
-    mcust: cCustomerModel;
-    cnt: Byte;
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     arrmcust: specialize cORMModelCollection<cCustomerModel>;
+     mcust: cCustomerModel;
+     cnt: Byte;
 
   begin
     conn := createConnection();
@@ -477,15 +542,38 @@ procedure cRepositoryTest.Test_Aggregate_2;
 
     FreeAndNil(conn);
   end;
+  
+procedure cRepositoryTest.Test_DataType_Decimal;
+  var
+     repo: specialize cORMRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     mcust1, mcust2: cCustomerModel;
+     collmcust: specialize cORMModelCollection<cCustomerModel>;
+    
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cCustomerModel>.Create(conn, 'customer');
+    
+    collmcust := repo.findAll(cOrderByField.Create('ID'));
+    for mcust1 in collmcust do
+      begin
+        mcust2 := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('FundD', TSearchFieldOperator.sfoEqual, mcust1.FundD)));
+        
+        CheckEquals(true, Assigned(mcust2), 'Failed - DataType Decimal 1 - ('+FloatToStr(mcust1.FundD)+')');
+        CheckEquals(mcust1.ID, mcust2.ID, 'Failed - DataType Decimal 2 - ('+FloatToStr(mcust1.FundD)+')');
+      end;
+    
+    FreeAndNil(conn);
+  end;
 
 procedure cRepositoryTest.Test_RawSQLReader;
   var
-    repo: specialize cORMRawRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    arrmcust: specialize cORMModelCollection<cCustomerModel>;
-    arrData: TArrayDataResult;
-    mcust: cCustomerModel;
-    cnt: Word;
+     repo: specialize cORMRawRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     arrmcust: specialize cORMModelCollection<cCustomerModel>;
+     arrData: TArrayDataResult;
+     mcust: cCustomerModel;
+     cnt: Word;
 
   begin
     conn := createConnection();
@@ -497,7 +585,7 @@ procedure cRepositoryTest.Test_RawSQLReader;
     CheckEquals(100, cnt, 'Failed - RawSQLReader 1');
 
     arrData := repo.readDataAsArray('select * from customer');
-    CheckEquals(5, length(arrData), 'Failed - RawSQLReader 2');
+    CheckEquals(7, length(arrData), 'Failed - RawSQLReader 2');
     CheckEquals(101, length(arrData[0]), 'Failed - RawSQLReader 3');
 
     {for cnt := 0 to 100 do
@@ -509,9 +597,9 @@ procedure cRepositoryTest.Test_RawSQLReader;
 
 procedure cRepositoryTest.Test_RawSQLWriter;
   var
-    repo: specialize cORMRawRepository<cCustomerModel>;
-    conn: cORMMySqlConnector;
-    strList: TStringList;
+     repo: specialize cORMRawRepository<cCustomerModel>;
+     conn: cORMMySqlConnector;
+     strList: TStringList;
 
   begin
     conn := createConnection();

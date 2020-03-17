@@ -16,6 +16,8 @@ type
       procedure Test_Insert;
       procedure Test_Update;
       procedure Test_Delete;
+      procedure Test_Delete_Empty_1;
+      procedure Test_Delete_Empty_2;
       procedure Test_FindAll;
       procedure Test_FindBy;
       procedure Test_FindOneBy;
@@ -35,8 +37,8 @@ end;
 
 procedure cJsonModelTest.Test_Delete_All;
   var
-    repo: specialize cORMRepository<cDataModel>;
-    conn: cORMMySqlConnector;
+     repo: specialize cORMRepository<cDataModel>;
+     conn: cORMMySqlConnector;
 
   begin
     conn := createConnection();
@@ -46,21 +48,29 @@ procedure cJsonModelTest.Test_Delete_All;
 
 procedure cJsonModelTest.Test_Insert;
   var
-    repo: specialize cORMRepository<cDataModel>;
-    conn: cORMMySqlConnector;
-    mdata: cDataModel;
-    arrmdata: specialize TArray<cDataModel>;
-    I: Integer;
+     repo: specialize cORMRepository<cDataModel>;
+     conn: cORMMySqlConnector;
+     mdata: cDataModel;
+     arrmdata: specialize TArray<cDataModel>;
+     I: Integer;
 
   begin
-    SetLength(arrmdata, 10);
-    for I := 0 to Length(arrmdata)-1 do
+    SetLength(arrmdata, 12);
+    for I := 0 to Length(arrmdata)-3 do
       begin
         mdata := cDataModel.Create();
         mdata.DataJson := TJSONObject(GetJSON('{"Fld1" : "Hello", "Fld2" : '+IntToStr(I+1)+', "Colors" : ["Red", "Green", "Blue"]}'));
 
         arrmdata[I] := mdata;
       end;
+    
+    mdata := cDataModel.Create();
+    mdata.DataJson := TJSONObject(GetJSON(''));
+    arrmdata[Length(arrmdata)-2] := mdata;
+    
+    mdata := cDataModel.Create();
+    mdata.DataJson := TJSONObject(GetJSON('{}'));
+    arrmdata[Length(arrmdata)-1] := mdata;
 
     conn := createConnection();
     repo := specialize cORMRepository<cDataModel>.Create(conn, 'datatest');
@@ -71,10 +81,10 @@ procedure cJsonModelTest.Test_Insert;
 
 procedure cJsonModelTest.Test_Update;
   var
-    repo: specialize cORMRepository<cDataModel>;
-    conn: cORMMySqlConnector;
-    mdata: cDataModel;
-    jObject: TJSONObject;
+     repo: specialize cORMRepository<cDataModel>;
+     conn: cORMMySqlConnector;
+     mdata: cDataModel;
+     jObject: TJSONObject;
 
   begin
     conn := createConnection();
@@ -89,7 +99,48 @@ procedure cJsonModelTest.Test_Update;
   end;
 
 procedure cJsonModelTest.Test_Delete;
+  var
+     repo: specialize cORMRepository<cDataModel>;
+     conn: cORMMySqlConnector;
+     mdata: cDataModel;
+
   begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cDataModel>.Create(conn, 'datatest');
+    mdata := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('id', TSearchFieldOperator.sfoEqual, 5)));
+
+    CheckEquals(true, repo.delete(mdata), 'Failed - Delete');
+    FreeAndNil(conn);
+  end;
+  
+procedure cJsonModelTest.Test_Delete_Empty_1;
+  var
+     repo: specialize cORMRepository<cDataModel>;
+     conn: cORMMySqlConnector;
+     mdata: cDataModel;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cDataModel>.Create(conn, 'datatest');
+    mdata := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('id', TSearchFieldOperator.sfoEqual, 11)));
+
+    CheckEquals(true, repo.delete(mdata), 'Failed - Delete Empty 1');
+    FreeAndNil(conn);
+  end;
+  
+procedure cJsonModelTest.Test_Delete_Empty_2;
+  var
+     repo: specialize cORMRepository<cDataModel>;
+     conn: cORMMySqlConnector;
+     mdata: cDataModel;
+
+  begin
+    conn := createConnection();
+    repo := specialize cORMRepository<cDataModel>.Create(conn, 'datatest');
+    mdata := repo.findOneBy(cSearchCriteria.Create(1, cSearchField.Create('id', TSearchFieldOperator.sfoEqual, 12)));
+
+    CheckEquals(true, repo.delete(mdata), 'Failed - Delete Empty 2');
+    FreeAndNil(conn);
   end;
 
 procedure cJsonModelTest.Test_FindAll;
